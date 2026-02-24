@@ -7,7 +7,7 @@ import pickle
 model = pickle.load(open("models/log_model.pkl", "rb"))
 scaler = pickle.load(open("models/scaler.pkl","rb"))
 
-st.write("App Loaded Succcessfully")
+
 st.title("Early Diabetes Risk Prediction System")
 st.header("Enter Patient Details")
 
