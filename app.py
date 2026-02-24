@@ -2,6 +2,40 @@ import streamlit as st
 import numpy as np
 import pickle
 
+def generate_explanation(glucose, bmi, age, dpf, bp):
+    reasons = []
+
+    if glucose >= 140:
+        reasons.append("Elevated glucose levels detected.")
+
+    elif glucose >= 110:
+        reasons.append("Borderline glucose levels observed.")
+
+    if bmi >= 30:
+        reasons.append("BMI indicated obesity-related metabolic risk.")
+
+    elif bmi >= 25:
+        reasons.append("BMI indicated overweight category.")
+
+    if age >= 50:
+        reasons.append("Higher age increases diabetes susceptibility.")
+
+    if dpf >= 0.5:
+        reasons.append("Genetic risk factor (Diabetes Pedigree Function) is elevated.")
+
+    if bp >- 140:
+        reasons.append("High blood pressure may contribute to metabolic stress.")
+
+    return reasons
+
+def generate_recommendations(risk_level):
+    recommendations = []
+
+    if risk_level == "Low":
+        recommendations.append("Maintain a balanced diet and regular physical activity.")
+        recommendations.append("Monitor glucose levels annually.")
+
+        elif risk
 
 # Load model
 model = pickle.load(open("models/log_model.pkl", "rb"))
@@ -39,17 +73,35 @@ if(st.button("Predict Risk")):
 
     probability = model.predict_proba(input_scaled)[0][1]
 
-    threshold = 0.24
+    st.subheader("Preduction Result")
+    st.write(f"Risk Probability: {probability:.2f}")
 
-    prediction = 1 if probability >= threshold else 0
+    # Risk Segmentation
 
-    st.subheader("Prediction Result")
-    st.write(f"Risk Probability: {probability: 2f}")
-
-    if prediction == 1:
-        st.error("High Risk Of Diabetes")
+    if probability < 0.20:
+        st.success("Low RisK catergory")
+        risk_level = "Low"
+    elif probability< 0.40:
+        st.info("Mild Risk Category")
+        risk_level = "Mild"
+    elif probability < 0.70:
+        st.warning("High Risk Category")
+        risk_level = "High"
     else:
-        st.success("Low Risk of Diabetes")
+        st.success("Critical Risk Category")
+        risk_level = "Critical"
 
-        st.write("Confidence Score:", round(abs(probability - 0.5) * 2,2))
+    st.subheader("Risk Explanation")
+
+    reasons = generate_explanation(glucose, bmi, age, dpf, bp)
+
+    if reasons:
+        for reason in reasons:
+            st.write("*", reason)
+        else:
+            st.write("No major high-risk indicators detected.")
+
+        # Confidence Score
+        confidence = abs(probability - 0.5) * 2
+        st.write("Confidence Score:", round(confidence,2))
 
