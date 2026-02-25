@@ -23,7 +23,7 @@ def generate_explanation(glucose, bmi, age, dpf, bp):
     if dpf >= 0.5:
         reasons.append("Genetic risk factor (Diabetes Pedigree Function) is elevated.")
 
-    if bp >- 140:
+    if bp >= 140:
         reasons.append("High blood pressure may contribute to metabolic stress.")
 
     return reasons
@@ -35,7 +35,25 @@ def generate_recommendations(risk_level):
         recommendations.append("Maintain a balanced diet and regular physical activity.")
         recommendations.append("Monitor glucose levels annually.")
 
-        elif risk
+    elif risk_level == "Mild":
+        recommendations.append("Adopt a low-refined-carb-diet.")
+        recommendations.append("Increase Physical activity (atleast 150 min/week).")
+        recommendations.append("Monitor fasting glucose every 3-6 months.")
+
+    elif risk_level == "High":
+        recommendations.append("Consult a healthcare professional for evaluation.")
+        recommendations.append("Follow a structured weight management plan.")
+        recommendations.append("Reduce refined sugars and processed foods.")
+        recommendations.append("Monitor blood glucose monthly.")
+
+    elif risk_level == "Critical":
+        recommendations.append("Seek immediate medical consultation.")
+        recommendations.append("Undergo detailed blood tests (Hba1c, fasting glucose).")
+        recommendations.append("Begin supervised lifestyle intervention.")
+        recommendations.append("Follow strict dietary control and physical monitoring. ")
+
+    return recommendations
+
 
 # Load model
 model = pickle.load(open("models/log_model.pkl", "rb"))
@@ -88,18 +106,25 @@ if(st.button("Predict Risk")):
         st.warning("High Risk Category")
         risk_level = "High"
     else:
-        st.success("Critical Risk Category")
+        st.error("Critical Risk Category")
         risk_level = "Critical"
 
-    st.subheader("Risk Explanation")
 
     reasons = generate_explanation(glucose, bmi, age, dpf, bp)
+    st.subheader("Risk Explanation")
 
     if reasons:
         for reason in reasons:
             st.write("*", reason)
-        else:
-            st.write("No major high-risk indicators detected.")
+    else:
+        st.write("No major high-risk indicators detected.")
+
+    st.subheader("Recommended Actions")
+
+    recommendations = generate_recommendations(risk_level)
+
+    for rec in recommendations:
+        st.write("•", rec)
 
         # Confidence Score
         confidence = abs(probability - 0.5) * 2
