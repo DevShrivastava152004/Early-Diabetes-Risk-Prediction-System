@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 
 st.set_page_config(page_title="Diabetes Risk Prediction", layout="wide")
+st.markdown("<h2 style='color:#2E86C1;'>Health Risk Summary</h2>", unsafe_allow_html=True)
 
 # Load model
 model = pickle.load(open("models/log_model.pkl", "rb"))
@@ -108,22 +109,23 @@ if page == "Risk Prediction":
             probability = model.predict_proba(input_scaled)[0][1]
 
             st.subheader("📊 Risk Assessment")
-            st.metric("Risk Probability", f"{probability:.2%}")
+            percentage = round(probability * 100)
+            st.metric("Estimated Risk Level", f"{percentage}%")
             st.progress(float(probability))
 
             # Risk Segmentation
             if probability < 0.20:
-                st.success("🟢 Low Risk")
-                risk_level = "Low"
+               risk_level= "Low"
+               st.success("🟢 Low Risk\n\nYour health indicators look stable. Continue healthy habits.")
             elif probability < 0.40:
-                st.info("🟡 Mild Risk")
                 risk_level = "Mild"
+                st.info("🟡 Mild Risk\n\nThere are early warning signs. Improve diet and activity.")
             elif probability < 0.70:
-                st.warning("🟠 High Risk")
                 risk_level = "High"
+                st.warning("🟠 High Risk\n\nMedical consultation is recommended.")
             else:
-                st.error("🔴 Critical Risk")
                 risk_level = "Critical"
+                st.error("🔴 Critical Risk\n\nPlease visit a healthcare professional immediately.")
 
             confidence = abs(probability - 0.5) * 2
 
@@ -147,15 +149,29 @@ if page == "Risk Prediction":
                 st.write("•", rec)
 
             st.markdown("---")
-            st.write("Confidence Score:", round(confidence, 2))
+            confidence_percent = round(confidence * 100)
+            st.write(f"Reliability of Assessment: {confidence_percent}%")
+            st.caption("Higher reliabilty means the system is more certain about this result. ")
+
+            st.markdown("---")
+            st.subheader("📝 Final Summary")
+
+            if risk_level in ["Low"]:
+                st.write("At this time, your health indicators look stable. Continue healthy habits.")
+            elif risk_level in ["Mild"]:
+                st.write("There are early signs of risk. Improving diet and exercise can help prevent diabetes.")
+            elif risk_level in ["High"]:
+                st.write("There are strong warning signs. Please consult a healthcare provider soon")
+            else:
+                st.write("Immediate medical evaluation is strongly recommended.")
 
             # Report generation
             report = f"""
 Early Diabetes Risk Assessment Report
 
-Risk Probability: {probability:.2f}
+Risk Level: {percentage}%
 Risk Category: {risk_level}
-Confidence Score: {round(confidence,2)}
+Reliability: {confidence_percent}%
 """
 
             for rec in recommendations:
