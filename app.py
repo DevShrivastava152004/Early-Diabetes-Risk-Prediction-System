@@ -3,6 +3,12 @@ import numpy as np
 import pickle
 
 st.set_page_config(page_title="Diabetes Risk Prediction", layout="wide")
+st.markdown("""
+            <style>
+            html, body, [class*="css"] {
+            font-size: 20px !important;
+            }
+            </style>""",unsafe_allow_html=True)
 st.markdown("<h2 style='color:#2E86C1;'>Health Risk Summary</h2>", unsafe_allow_html=True)
 
 # Load model
