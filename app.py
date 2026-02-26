@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 
 st.set_page_config(page_title="Diabetes Risk Prediction", layout="wide")
+st.warning("⚠ This tool provides an estimated risk assessment and is not a medical diagnosis. Please consult a healthcare professional for clinical decisions.")
 st.markdown("""
             <style>
             html, body, [class*="css"] {
